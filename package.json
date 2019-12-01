@@ -1,0 +1,23 @@
+{
+  "name": "my-express",
+  "version": "1.0.0",
+  "description": "study and try to implement a simple Express",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guooooooo/my-express.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/guooooooo/my-express/issues"
+  },
+  "homepage": "https://github.com/guooooooo/my-express#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
