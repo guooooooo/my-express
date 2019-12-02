@@ -2,7 +2,7 @@ const express = require("./express");
 
 const app = express();
 
-app.get(
+app.post(
   "/",
   (req, res, next) => {
     console.log("1");
@@ -14,13 +14,14 @@ app.get(
   },
   (req, res, next) => {
     console.log("111");
+    res.end("post end");
     next();
   }
 );
 
 app.get("/", (req, res) => {
   console.log("2");
-  res.end("end");
+  res.end("get end");
 });
 
 app.listen(3003);

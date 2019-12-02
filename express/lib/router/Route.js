@@ -2,15 +2,20 @@ const Layer = require("./layer");
 
 function Route() {
   this.stack = [];
+  this.methods = {};
 }
 
-Route.prototype.get = function(handlers) {
-  handlers.forEach(handler => {
-    const layer = new Layer("", handler);
-    layer.method = "get";
-    this.stack.push(layer);
-  });
-};
+["get", "post", "put", "delete"].forEach(method => {
+  Route.prototype[method] = function(handlers) {
+    handlers.forEach(handler => {
+      const layer = new Layer("", handler);
+      layer.method = method;
+      this.methods[method] = true;
+      this.stack.push(layer);
+    });
+  };
+});
+
 // out 表示跳到下一层layer
 Route.prototype.dispatch = function(req, res, out) {
   let idx = 0;
