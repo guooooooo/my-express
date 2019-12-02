@@ -4,10 +4,12 @@ function Route() {
   this.stack = [];
 }
 
-Route.prototype.get = function(handler) {
-  const layer = new Layer("", handler);
-  layer.method = "get";
-  this.stack.push(layer);
+Route.prototype.get = function(handlers) {
+  handlers.forEach(handler => {
+    const layer = new Layer("", handler);
+    layer.method = "get";
+    this.stack.push(layer);
+  });
 };
 // out 表示跳到下一层layer
 Route.prototype.dispatch = function(req, res, out) {

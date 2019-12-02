@@ -7,16 +7,15 @@ app.get(
   (req, res, next) => {
     console.log("1");
     next();
-    console.log('end')
   },
-  // (req, res, next) => {
-  //   console.log("11");
-  //   next();
-  // },
-  // (req, res, next) => {
-  //   console.log("111");
-  //   next();
-  // }
+  (req, res, next) => {
+    console.log("11");
+    next();
+  },
+  (req, res, next) => {
+    console.log("111");
+    next();
+  }
 );
 
 app.get("/", (req, res) => {

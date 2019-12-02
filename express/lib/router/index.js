@@ -1,6 +1,6 @@
 const url = require("url");
 const Layer = require("./layer");
-const Route = require("./Route");
+const Route = require("./route");
 
 function Router() {
   this.stack = [];
@@ -15,9 +15,9 @@ Router.prototype.route = function(path) {
   return route;
 };
 
-Router.prototype.get = function(path, handler) {
+Router.prototype.get = function(path, handlers) {
   const route = this.route(path); // 创建一个包含route属性的layer
-  route.get(handler); // 把handler挂载到layer的route属性上
+  route.get(handlers); // 把handler挂载到layer的route属性上
 };
 
 Router.prototype.handle_request = function(req, res, out) {
