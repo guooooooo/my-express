@@ -17,6 +17,17 @@ Application.prototype.lazy_router = function() {
   };
 });
 
+// 中间件封装公共逻辑 扩展req, res
+Application.prototype.use = function(path, handler) {
+  this.lazy_router();
+  // 处理不传path的情况
+  if (typeof handler !== "function") {
+    handler = path;
+    path = "/";
+  }
+  this.router.use(path, handler);
+};
+
 Application.prototype.listen = function() {
   let server = http.createServer((req, res) => {
     this.lazy_router();

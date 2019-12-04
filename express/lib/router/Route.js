@@ -19,7 +19,12 @@ function Route() {
 // out 表示跳到下一层layer
 Route.prototype.dispatch = function(req, res, out) {
   let idx = 0;
-  const next = () => {
+  const next = err => {
+    if (err) {
+      // 处理路由错误
+      console.log(err);
+      return res.end(err);
+    }
     if (idx === this.stack.length) {
       return out();
     }

@@ -2,26 +2,36 @@ const express = require("./express");
 
 const app = express();
 
-app.post(
-  "/",
+app.use((req, res, next) => {
+  console.log("1");
+  next("middle");
+});
+
+app.use("/u", (req, res, next) => {
+  console.log("2");
+  next();
+});
+
+app.use("/user", (req, res, next) => {
+  console.log("3");
+  next();
+});
+
+app.get(
+  "/user/add",
   (req, res, next) => {
-    console.log("1");
-    next();
+    console.log("4");
+    // res.end("get end");
+    next("error");
   },
   (req, res, next) => {
-    console.log("11");
-    next();
-  },
-  (req, res, next) => {
-    console.log("111");
-    res.end("post end");
-    next();
+    res.end("ok");
   }
 );
 
-app.get("/", (req, res) => {
-  console.log("2");
-  res.end("get end");
+app.use((err, req, res, next) => {
+  console.log(err);
+  res.end("middle err");
 });
 
 app.listen(3003);

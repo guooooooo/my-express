@@ -6,6 +6,11 @@ function Router() {
   this.stack = [];
 }
 
+Router.prototype.use = function(path, handler) {
+  const layer = new Layer(path, handler);
+  this.stack.push(layer);
+};
+
 Router.prototype.route = function(path) {
   const route = new Route();
   // 当路径匹配时 交给route的dispatch去处理
@@ -24,20 +29,42 @@ Router.prototype.route = function(path) {
 
 Router.prototype.handle_request = function(req, res, out) {
   let idx = 0;
-  const next = () => {
+  const next = err => {
     if (idx === this.stack.length) {
       return out();
     }
     let layer = this.stack[idx++];
     let { pathname } = url.parse(req.url);
-    if (
-      layer.match(pathname) &&
-      layer.route.methods[req.method.toLowerCase()]
-    ) {
-      // 路径匹配时 此处执行layer对应的route.dispatch
-      layer.handler(req, res, next);
+
+    if (err) {
+      // 寻找错误中间件
+      if (!layer.route) {
+        if (layer.handler.length === 4) {
+          layer.handler(err, req, res, next);
+        } else {
+          next(err);
+        }
+      } else {
+        next(err); // 向下传递错误
+      }
     } else {
-      next();
+      if (layer.match(pathname)) {
+        if (layer.route) {
+          // 路由的话需要进一步匹配方法
+          if (layer.route.methods[req.method.toLowerCase()]) {
+            layer.handler(req, res, next);
+          } else {
+            next();
+          }
+        } else {
+          // 中间件路径匹配 不是错误中间件就直接执行
+          if (layer.handler.length !== 4) {
+            layer.handler(req, res, next);
+          }
+        }
+      } else {
+        next();
+      }
     }
   };
   next();

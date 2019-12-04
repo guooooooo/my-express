@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/guooooooo/my-express#readme",
   "dependencies": {
+    "expess": "^0.0.1-security",
     "express": "^4.17.1"
   }
 }
