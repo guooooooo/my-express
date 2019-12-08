@@ -4,7 +4,8 @@ const Route = require("./route");
 
 function Router() {
   const router = function(req, res, next) {
-    console.log("xxx");
+    // 请求到达时到子路由中匹配
+    router.handle_request(req, res, next);
   };
   router.stack = [];
   router.__proto__ = proto;
@@ -38,8 +39,14 @@ proto.route = function(path) {
 
 proto.handle_request = function(req, res, out) {
   let idx = 0;
+  let removed = "";
   const next = err => {
+    if (removed.length > 0) {
+      req.url = removed + req.url;
+      removed = "";
+    }
     if (idx === this.stack.length) {
+      // 进入下层时若之前删除过 则补全URL
       return out();
     }
     let layer = this.stack[idx++];
@@ -68,6 +75,12 @@ proto.handle_request = function(req, res, out) {
         } else {
           // 中间件路径匹配 不是错误中间件就直接执行
           if (layer.handler.length !== 4) {
+            // 中间件匹配可能是二级路由的情况
+            // 进入二级路由路径匹配时要把当前中间件的路径从当前URL中删掉
+            if (layer.path !== "/") {
+              removed = layer.path;
+              req.url = req.url.slice(removed.length);
+            }
             layer.handler(req, res, next);
           }
         }
