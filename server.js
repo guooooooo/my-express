@@ -2,24 +2,28 @@ const express = require("./express");
 
 const app = express();
 
-const router1 = express.Router()
-const router2 = express.Router()
+app.get("/user/:name/:age", (req, res, next) => {
+  console.log(req.params);
+  res.end("ok");
+});
 
+// const router1 = express.Router()
+// const router2 = express.Router()
 
-router1.get('/add', (req, res, next) => {
-  res.end('add')
-})
+// router1.get('/add', (req, res, next) => {
+//   res.end('add')
+// })
 
-router1.get('/del', (req, res, next) => {
-  res.end('del')
-})
+// router1.get('/del', (req, res, next) => {
+//   res.end('del')
+// })
 
-router2.get('/test', (req, res, next) => {
-  res.end('test')
-})
+// router2.get('/test', (req, res, next) => {
+//   res.end('test')
+// })
 
-app.use('/user', router1)
-app.use('/user', router2)
+// app.use('/user', router1)
+// app.use('/user', router2)
 
 // app.use((req, res, next) => {
 //   console.log("1");

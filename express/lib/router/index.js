@@ -41,12 +41,12 @@ proto.handle_request = function(req, res, out) {
   let idx = 0;
   let removed = "";
   const next = err => {
+    // 进入下层时若之前删除过 则补全URL
     if (removed.length > 0) {
       req.url = removed + req.url;
       removed = "";
     }
     if (idx === this.stack.length) {
-      // 进入下层时若之前删除过 则补全URL
       return out();
     }
     let layer = this.stack[idx++];
@@ -68,6 +68,7 @@ proto.handle_request = function(req, res, out) {
         if (layer.route) {
           // 路由的话需要进一步匹配方法
           if (layer.route.methods[req.method.toLowerCase()]) {
+            req.params = layer.params || {};
             layer.handler(req, res, next);
           } else {
             next();
