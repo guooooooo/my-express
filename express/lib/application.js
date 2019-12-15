@@ -17,6 +17,11 @@ Application.prototype.lazy_router = function() {
   };
 });
 
+Application.prototype.param = function(key, handler) {
+  this.lazy_router();
+  this.router.param(key, handler);
+};
+
 // 中间件封装公共逻辑 扩展req, res
 Application.prototype.use = function(path, handler) {
   this.lazy_router();

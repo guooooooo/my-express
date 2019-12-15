@@ -2,6 +2,20 @@ const express = require("./express");
 
 const app = express();
 
+app.param("name", (req, res, next, value, key) => {
+  if (value === "ming") {
+    req.params.name += "tian";
+    next();
+  }
+});
+
+app.param("age", (req, res, next, value, key) => {
+  if (key === "age") {
+    req.params.age += "11";
+    next();
+  }
+});
+
 app.get("/user/:name/:age", (req, res, next) => {
   console.log(req.params);
   res.end("ok");

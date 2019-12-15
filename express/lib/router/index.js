@@ -8,6 +8,7 @@ function Router() {
     router.handle_request(req, res, next);
   };
   router.stack = [];
+  router.paramsCallbacks = {};
   router.__proto__ = proto;
   return router;
 }
@@ -15,6 +16,50 @@ let proto = {};
 proto.use = function(path, handler) {
   const layer = new Layer(path, handler);
   this.stack.push(layer);
+};
+
+proto.param = function(key, handler) {
+  if (this.paramsCallbacks[key]) {
+    this.paramsCallbacks[key].push(handler);
+  } else {
+    this.paramsCallbacks[key] = [handler];
+  }
+};
+
+proto.process_param = function(req, res, layer, done) {
+  let params = this.paramsCallbacks;
+  let keys = layer.keys.map(key => key.name);
+  if (!keys || keys.length === 0) {
+    return done(); // 不需要处理参数
+  }
+  let idx = 0;
+  let callbacks;
+  let key;
+  let value;
+  const next = () => {
+    if (idx === keys.length) return done();
+    key = keys[idx++];
+    value = layer.params[key];
+    if (key) {
+      callbacks = params[key];
+      processCallback(next);
+    } else {
+      next();
+    }
+  };
+  next();
+  function processCallback(out) {
+    let idx = 0;
+    const next = () => {
+      let callback = callbacks[idx++];
+      if (callback) {
+        callback(req, res, next, value, key);
+      } else {
+        out(); // 取不到时则找下一个key
+      }
+    };
+    next();
+  }
 };
 
 proto.route = function(path) {
@@ -69,7 +114,10 @@ proto.handle_request = function(req, res, out) {
           // 路由的话需要进一步匹配方法
           if (layer.route.methods[req.method.toLowerCase()]) {
             req.params = layer.params || {};
-            layer.handler(req, res, next);
+            // 处理真正请求之前 先处理param
+            this.process_param(req, res, layer, () => {
+              layer.handler(req, res, next);
+            });
           } else {
             next();
           }
